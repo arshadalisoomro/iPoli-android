@@ -7,9 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -350,6 +353,31 @@ public class CalendarDayView extends FrameLayout {
             ViewHolder vh = (ViewHolder) holder;
             String text = hours.get(vh.getAdapterPosition());
             vh.timeLabel.setText(text);
+
+            vh.itemView.setOnTouchListener(new View.OnTouchListener() {
+                public int startY;
+                public int startX;
+
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        startX = (int) event.getX();
+                        startY = (int) event.getY();
+                    }
+
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        int endX = (int) event.getX();
+                        int endY = (int) event.getY();
+                        int dX = Math.abs(endX - startX);
+                        int dY = Math.abs(endY - startY);
+
+
+                        if (Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
+                            Log.d("OnHourCellClick", " " + getMinutesFor(event.getRawY(), 15));
+                        }
+                    }
+                    return true;
+                }
+            });
         }
 
         @Override
